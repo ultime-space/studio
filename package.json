@@ -1,0 +1,51 @@
+{
+  "name": "@ultime/studio",
+  "version": "0.1.0",
+  "description": "Ultime · studio：配置器无头运行时（定义 / 状态 / 规范化 / 诊断 / 预览模型 / 导出清单），纯 TS、零依赖、不碰 DOM 与文件系统",
+  "keywords": [
+    "configurator",
+    "design-tokens",
+    "form-state",
+    "headless",
+    "json-pointer",
+    "theme-editor",
+    "typescript"
+  ],
+  "homepage": "https://github.com/ultime-space/studio#readme",
+  "bugs": {
+    "url": "https://github.com/ultime-space/studio/issues"
+  },
+  "license": "MIT",
+  "author": "Ultime contributors",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ultime-space/studio.git"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "check": "vp check",
+    "test": "vp test",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepublishOnly": "pnpm check && pnpm test"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite-plus": "1.4.0"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}
