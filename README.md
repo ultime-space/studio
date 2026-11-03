@@ -12,7 +12,7 @@
 pnpm add @ultime/studio
 ```
 
-- 运行环境 Node >= 22.18（原生类型剥离），或任何支持 TS 源的打包器（Vite / esbuild 等）；包以 TS 源发布，无构建产物。
+- 运行环境 Node >= 22.18，或任何支持 ESM 的打包器（Vite / esbuild 等）；包发的是编译后的 ESM（`dist/`），类型来自 `src/*.ts`。
 - 本包**不 import** `core` / `kit` / `viewer` 等领域包；领域定义放在各包的 `/studio` 子入口（`@ultime/core/studio` 等）。
 
 ## 入口
