@@ -6,6 +6,7 @@
 - 新增 JSON / JSON Pointer / 编解码 / 导出 lock 的 API 测试，并补包内容边界测试。
 - `serialize` 文档不再绑定特定配置文件；README / rules 去掉跨包名称与发布顺序。
 - `keywords` 改为通用配置器词，不再绑定特定领域。
+- 补 `@types/node` 与 tsconfig `types: ["node"]`，修复 CI 中 `prepublishOnly` 的类型检查失败。
 
 ## 0.1.1 - 2026-11-04
 
