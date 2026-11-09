@@ -32,7 +32,7 @@ function parse<TConfig>(
   return normalizeConfig(definition, raw, { version: options.version ?? declared })
 }
 
-/** 规范化配置的稳定 JSON：可直接落 `ultime.config.json`，不含派生值 */
+/** 规范化配置的稳定 JSON：可直接落项目配置（字段由定义包决定），不含派生值 */
 export function serializeConfig<TConfig>(definition: ConfiguratorDefinition<TConfig>, config: TConfig): string {
   return stableStringify(normalizeConfig(definition, config), 2)
 }

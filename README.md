@@ -70,7 +70,7 @@ const direct = await exportConfig(theme, config)
 | `reset` | 默认回 baseline；`mode: 'defaults'` 回定义默认值；带 `path` 只复位一个字段 |
 | `validate()` | 通用字段校验 + 定义 `validate()`；`error` 阻断导出，`warn` / `info` 不阻断 |
 | `export()` | 规范化 → 校验 → 定义 `export()`；返回 `ExportOutcome`，无文件 IO / 下载 |
-| `serialize()` | 稳定 JSON（对象键排序），可直接落 `ultime.config.json`，不含派生值 |
+| `serialize()` | 稳定 JSON（对象键排序），可直接落项目配置（字段由定义包决定），不含派生值 |
 | `toURL()` / `fromURL()` | 纯编解码，`#studio=v1.…`，版本随串走；不依赖 `btoa` / `Buffer` / localStorage |
 | `inspect()` | 只读派生值，供上游展示「seed → 派生」；不进 config、不进导出 |
 | `preview()` | `PreviewModel.css` 是主路径，必须与 `export()` 同源；`vars` 只做兼容 |
