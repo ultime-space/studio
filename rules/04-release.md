@@ -1,6 +1,6 @@
 # 04 · 版本与发布
 
-> 定位：studio 的 TS 直发形态、发布顺序与检查。
+> 定位：studio 的编译 ESM 形态、发布顺序与检查。
 > 适用版本：0.1.x
 > 关系：测试见 [`03-testing`](./03-testing.md)；发布由仓库 owner 按本清单执行。
 
@@ -8,7 +8,7 @@
 
 ## 形态
 
-- **TS 直发**：`exports` 指向 `src/index.ts`；无构建链。
+- **编译 ESM**：`exports` 的 `import` 指向 `dist/index.js`，由 `vp build` 生成；类型来自 `src/*.ts`。
 - `engines.node >= 22.18`；浏览器侧需要打包器。
 - 零第三方运行时依赖。
 

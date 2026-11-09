@@ -1,14 +1,14 @@
 {
   "name": "@ultime/studio",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Ultime · studio：配置器无头运行时（定义 / 状态 / 规范化 / 诊断 / 预览模型 / 导出清单），纯 TS、零依赖、不碰 DOM 与文件系统",
   "keywords": [
+    "configuration",
     "configurator",
-    "design-tokens",
     "form-state",
     "headless",
     "json-pointer",
-    "theme-editor",
+    "settings",
     "typescript"
   ],
   "homepage": "https://github.com/ultime-space/studio#readme",
