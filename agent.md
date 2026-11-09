@@ -19,11 +19,11 @@
 ## 只读
 
 - `node_modules/**`；
-- 领域包（core / kit / viewer）的源码与产物；只在定义层消费，不跨包改。
+- 领域包的源码与产物；只在定义层消费，不跨包改。
 
 ## 禁止
 
-- import `core` / `kit` / `viewer` 或任何领域包；
+- import 任何领域包；
 - 读写文件、访问 DOM、`localStorage`、网络；
 - 在运行时决定布局与控件形态；
 - 在 `set()` 里自动重算诊断；

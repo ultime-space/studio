@@ -13,11 +13,11 @@ describe('checkContract', () => {
     const definition = defineConfigurator<DemoConfig>({
       ...demoDefinition,
       fields: [
-        { path: 'tokens/seed/primaryHue', label: '主色相', type: 'hue' },
+        { path: 'theme/accent/hue', label: '主题色相', type: 'hue' },
         { path: '/meta/name', label: '名称', type: 'text' },
         { path: '/meta/name', label: '', type: 'text' },
         { path: '/meta/dark', label: '暗色', type: 'select' },
-        { path: '/tokens/seed/lightness', label: '明度', type: 'slider', min: 1, max: 0 },
+        { path: '/theme/accent/lightness', label: '明度', type: 'slider', min: 1, max: 0 },
       ],
     })
 
@@ -35,9 +35,9 @@ describe('checkContract', () => {
       ...demoDefinition,
       defaults: {
         ...demoDefaults,
-        tokens: {
-          ...demoDefaults.tokens,
-          seed: { ...demoDefaults.tokens.seed, primaryHue: '210' as unknown as number },
+        theme: {
+          ...demoDefaults.theme,
+          accent: { ...demoDefaults.theme.accent, hue: '210' as unknown as number },
         },
       },
     })
@@ -62,7 +62,7 @@ describe('checkContract', () => {
     let calls = 0
     const definition = defineConfigurator<DemoConfig>({
       ...demoDefinition,
-      export: () => ({ files: [{ path: 'tokens.css', content: `calls:${(calls += 1)}` }] }),
+      export: () => ({ files: [{ path: 'theme.css', content: `calls:${(calls += 1)}` }] }),
     })
 
     const report = await checkContract(definition)

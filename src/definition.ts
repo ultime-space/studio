@@ -24,7 +24,7 @@ export interface Condition {
 }
 
 export interface FieldSpec {
-  /** JSON Pointer，如 `/tokens/seed/primaryHue` */
+  /** JSON Pointer，如 `/theme/accent/hue` */
   path: string
   label: string
   type: FieldType
@@ -81,7 +81,7 @@ export interface ConfiguratorDefinition<TConfig> {
   normalize?(input: unknown): TConfig
   /** 领域校验；error 阻断导出，warn / info 不阻断 */
   validate?(config: TConfig, context: ValidationContext): Awaitable<readonly Diagnostic[]>
-  /** 只读派生值，供上游展示「seed → 派生」；不进 config、不进导出 */
+  /** 只读派生值，供上游展示「配置 → 派生」；不进 config、不进导出 */
   inspect?(config: TConfig): Record<string, unknown>
   /** 预览模型；必须与 export() 同源，运行时不做「近似预览」 */
   preview?(config: TConfig): PreviewModel

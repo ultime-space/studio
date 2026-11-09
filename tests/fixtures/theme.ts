@@ -8,14 +8,14 @@
 import { defineConfigurator, type ConfiguratorDefinition } from '../../src/index.ts'
 
 export interface DemoConfig {
-  tokens: {
-    seed: {
-      primaryHue: number
+  theme: {
+    accent: {
+      hue: number
       lightness: number
-      neutral: { light: { temperature: string } }
+      tone: string
     }
-    subset: { space: number[] }
-    platforms: string[]
+    spacing: number[]
+    formats: string[]
   }
   meta: {
     name: string
@@ -24,14 +24,14 @@ export interface DemoConfig {
 }
 
 export const demoDefaults: DemoConfig = {
-  tokens: {
-    seed: {
-      primaryHue: 210,
+  theme: {
+    accent: {
+      hue: 210,
       lightness: 0.64,
-      neutral: { light: { temperature: 'neutral' } },
+      tone: 'neutral',
     },
-    subset: { space: [4, 8, 12, 16] },
-    platforms: ['css', 'json'],
+    spacing: [4, 8, 12, 16],
+    formats: ['css', 'json'],
   },
   meta: {
     name: 'demo',
@@ -41,16 +41,16 @@ export const demoDefaults: DemoConfig = {
 
 export const demoDefinition: ConfiguratorDefinition<DemoConfig> = defineConfigurator({
   id: 'demo-theme',
-  title: '示例主题',
+  title: '示例配置',
   version: '1.0.0',
   defaults: demoDefaults,
   unknownPolicy: 'reject',
   fields: [
-    { path: '/tokens/seed/primaryHue', label: '主色相', type: 'hue', min: 0, max: 360, step: 1, unit: '°' },
-    { path: '/tokens/seed/lightness', label: '明度', type: 'slider', min: 0.3, max: 0.9, step: 0.01 },
+    { path: '/theme/accent/hue', label: '主题色相', type: 'hue', min: 0, max: 360, step: 1, unit: '°' },
+    { path: '/theme/accent/lightness', label: '明度', type: 'slider', min: 0.3, max: 0.9, step: 0.01 },
     {
-      path: '/tokens/seed/neutral/light/temperature',
-      label: '中性色温',
+      path: '/theme/accent/tone',
+      label: '色温',
       type: 'select',
       options: [
         { value: 'warm', label: '暖' },
@@ -59,14 +59,14 @@ export const demoDefinition: ConfiguratorDefinition<DemoConfig> = defineConfigur
       ],
     },
     {
-      path: '/tokens/subset/space',
-      label: '间距子集',
+      path: '/theme/spacing',
+      label: '间距档位',
       type: 'multi-select',
       options: [4, 8, 12, 16, 24].map((value) => ({ value, label: String(value) })),
     },
     {
-      path: '/tokens/platforms',
-      label: '出口',
+      path: '/theme/formats',
+      label: '输出格式',
       type: 'multi-select',
       options: ['css', 'json', 'dtcg'].map((value) => ({ value, label: value })),
     },
@@ -79,45 +79,45 @@ export const demoDefinition: ConfiguratorDefinition<DemoConfig> = defineConfigur
       label: '沉稳',
       config: {
         ...demoDefaults,
-        tokens: {
-          ...demoDefaults.tokens,
-          seed: { ...demoDefaults.tokens.seed, primaryHue: 250, lightness: 0.5 },
+        theme: {
+          ...demoDefaults.theme,
+          accent: { ...demoDefaults.theme.accent, hue: 250, lightness: 0.5 },
         },
       },
     },
   ],
   validate(config) {
     const diagnostics = []
-    if (config.tokens.seed.lightness > 0.8) {
+    if (config.theme.accent.lightness > 0.8) {
       diagnostics.push({
         level: 'warn' as const,
         code: 'demo/lightness-bright',
         message: '明度过高，浅色模式对比度可能不足',
-        path: '/tokens/seed/lightness',
+        path: '/theme/accent/lightness',
       })
     }
-    if (!config.tokens.subset.space.length) {
+    if (!config.theme.spacing.length) {
       diagnostics.push({
         level: 'error' as const,
         code: 'demo/space-empty',
-        message: '间距子集不能为空',
-        path: '/tokens/subset/space',
+        message: '间距档位不能为空',
+        path: '/theme/spacing',
       })
     }
     return diagnostics
   },
   inspect: (config) => ({
-    '--color-primary': `oklch(0.64 0.12 ${config.tokens.seed.primaryHue})`,
+    '--accent-hue': String(config.theme.accent.hue),
   }),
   preview: (config) => ({
-    css: `:root { --color-primary-hue: ${config.tokens.seed.primaryHue}; }`,
-    vars: { '--color-primary-hue': String(config.tokens.seed.primaryHue) },
+    css: `:root { --accent-hue: ${config.theme.accent.hue}; }`,
+    vars: { '--accent-hue': String(config.theme.accent.hue) },
     scenarios: [{ id: 'default', label: '默认' }],
   }),
   export: (config) => ({
     files: [
-      { path: 'tokens.css', content: `:root{--color-primary-hue:${config.tokens.seed.primaryHue}}` },
-      { path: 'tokens.json', content: JSON.stringify(config.tokens.seed) },
+      { path: 'theme.css', content: `:root{--accent-hue:${config.theme.accent.hue}}` },
+      { path: 'theme.json', content: JSON.stringify(config.theme.accent) },
     ],
   }),
 })

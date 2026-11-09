@@ -50,7 +50,7 @@ export interface ExportOutcome {
 
 export interface ConfigPatchOperation {
   op: 'add' | 'remove' | 'replace'
-  /** JSON Pointer，如 `/tokens/seed/primaryHue` */
+  /** JSON Pointer，如 `/theme/accent/hue` */
   path: string
   value?: unknown
 }

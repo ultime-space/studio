@@ -13,7 +13,7 @@ pnpm add @ultime/studio
 ```
 
 - 运行环境 Node >= 22.18，或任何支持 ESM 的打包器（Vite / esbuild 等）；包发的是编译后的 ESM（`dist/`），类型来自 `src/*.ts`。
-- 本包**不 import** `core` / `kit` / `viewer` 等领域包；领域定义放在各包的 `/studio` 子入口（`@ultime/core/studio` 等）。
+- 本包**不 import** 任何领域包；领域定义放在各包的 `/studio` 子入口，本包只认通用协议。
 
 ## 入口
 
@@ -21,7 +21,7 @@ pnpm add @ultime/studio
 |---|---|
 | `@ultime/studio` | 定义协议、控制器、规范化、诊断、编解码、预览模型、导出清单、契约测试 |
 
-领域定义不在这里：core 等领域包各自提供 `/studio` 子入口（如 `@ultime/core/studio`），本包只认通用协议。
+领域定义不在这里：各领域包自行提供 `/studio` 子入口，本包只认通用协议。
 
 ## 三层分工
 
@@ -37,25 +37,25 @@ pnpm add @ultime/studio
 import { createConfigurator, defineConfigurator, exportConfig, normalizeConfig } from '@ultime/studio'
 
 // 定义包：只声明领域规则
-const theme = defineConfigurator({
-  id: 'theme',
-  title: '设计系统',
+const configurator = defineConfigurator({
+  id: 'demo',
+  title: '示例配置',
   version: '1.0.0',
   defaults,             // 完整默认配置
   fields,               // FieldSpec[]，path 用 JSON Pointer
   validate(config, ctx) { /* 领域规则 */ return [] },
-  export(config) { return { files: [{ path: 'tokens.css', content }] } },
+  export(config) { return { files: [{ path: 'output.css', content }] } },
 })
 
 // 有状态编辑：给上游表单用
-const studio = createConfigurator(theme)
-studio.set('/tokens/seed/primaryHue', 210)
+const studio = createConfigurator(configurator)
+studio.set('/theme/accent/hue', 210)
 const diagnostics = await studio.validate()
 const outcome = await studio.export()     // error 阻断时 ok: false，不抛异常
 
 // 无状态直出：CLI / AI / 一次性导出
-const config = normalizeConfig(theme, rawJson)
-const direct = await exportConfig(theme, config)
+const config = normalizeConfig(configurator, rawJson)
+const direct = await exportConfig(configurator, config)
 ```
 
 ## 语义约定
@@ -72,7 +72,7 @@ const direct = await exportConfig(theme, config)
 | `export()` | 规范化 → 校验 → 定义 `export()`；返回 `ExportOutcome`，无文件 IO / 下载 |
 | `serialize()` | 稳定 JSON（对象键排序），可直接落项目配置（字段由定义包决定），不含派生值 |
 | `toURL()` / `fromURL()` | 纯编解码，`#studio=v1.…`，版本随串走；不依赖 `btoa` / `Buffer` / localStorage |
-| `inspect()` | 只读派生值，供上游展示「seed → 派生」；不进 config、不进导出 |
+| `inspect()` | 只读派生值，供上游展示「配置 → 派生」；不进 config、不进导出 |
 | `preview()` | `PreviewModel.css` 是主路径，必须与 `export()` 同源；`vars` 只做兼容 |
 
 **四条硬约束**：先规范化再导出；导出确定性（同输入逐字节相同、lock 不含时间戳）；预览与导出同源；运行时不决定布局与控件形态。
@@ -87,7 +87,7 @@ const direct = await exportConfig(theme, config)
 ```ts
 import { assertContract } from '@ultime/studio'
 
-await assertContract(theme)   // 字段自洽 / 默认值规范形 / 往返 / 默认值校验 / 导出确定性
+await assertContract(configurator)   // 字段自洽 / 默认值规范形 / 往返 / 默认值校验 / 导出确定性
 ```
 
 定义包自己再补领域 golden 测试（同一份输入产物逐字节一致）。

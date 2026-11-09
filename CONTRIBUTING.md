@@ -10,7 +10,7 @@
 
 ## 改动规则
 
-- 运行时只认 `ConfiguratorDefinition` 通用协议；不 import core / kit / viewer。
+- 运行时只认 `ConfiguratorDefinition` 通用协议；不 import 任何领域包。
 - 不做 UI、文件 IO、DOM、网络；预览与导出必须同源。
 - 协议字段变更会影响所有领域包：先改 studio，再发依赖包。
 - 改导出或序列化必须有「同输入逐字节相同」测试。
@@ -27,4 +27,4 @@ npm pack --dry-run
 ## 版本
 
 - 0.x 阶段协议仍可能调整；破坏性变更写进 README「版本与兼容」。
-- 发布顺序：studio → core → cli。
+- 协议变更先发 studio，再发依赖它的领域包。

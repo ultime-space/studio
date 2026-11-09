@@ -13,7 +13,7 @@
 ## 机器入口
 
 - 协议形状：`src/definition.ts`
-- 契约测试：`assertContract(theme)`
+- 契约测试：`assertContract(definition)`
 - 校验 / 导出：`createConfigurator` / `exportConfig`
 
 ## 边界

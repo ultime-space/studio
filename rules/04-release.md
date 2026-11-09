@@ -14,7 +14,7 @@
 
 ## 顺序
 
-`@ultime/studio` → `@ultime/core` → `@ultime/cli`。
+先发 `@ultime/studio`，再由依赖它的领域包各自发布；顺序由各自仓库执行。
 
 ## 发布前检查
 

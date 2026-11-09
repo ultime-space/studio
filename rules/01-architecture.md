@@ -22,7 +22,7 @@ UI / CLI / AI → @ultime/studio
 领域包 /studio ──────┘（只实现定义协议）
 ```
 
-- 本包**不 import** `core` / `kit` / `viewer`。
+- 本包**不 import** 任何领域包。
 - 领域包依赖本包，不反向。
 - 只通过公开入口依赖，不跨包读源码。
 
@@ -43,5 +43,5 @@ UI / CLI / AI → @ultime/studio
 
 ## 反例
 
-- 为方便在 studio 里 import core 的 seed 类型 —— 领域类型归 core 的 `/studio` 子入口。
+- 为方便在 studio 里 import 领域包的配置类型 —— 领域类型归对应包的 `/studio` 子入口。
 - 在运行时里读取 `localStorage` 存草稿 —— 持久化只做纯字符串编解码。

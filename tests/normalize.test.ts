@@ -12,8 +12,8 @@ describe('normalizeConfig', () => {
     const config = normalizeConfig(demoDefinition, { meta: { name: 'custom' } })
     expect(config.meta.name).toBe('custom')
     expect(config.meta.dark).toBe(false)
-    expect(config.tokens.seed.primaryHue).toBe(210)
-    expect(config.tokens.subset.space).toEqual([4, 8, 12, 16])
+    expect(config.theme.accent.hue).toBe(210)
+    expect(config.theme.spacing).toEqual([4, 8, 12, 16])
   })
 
   it('空输入等于默认值', () => {
@@ -43,17 +43,17 @@ describe('normalizeConfig', () => {
   })
 
   it('类型不匹配直接抛错', () => {
-    expect(() => normalizeConfig(demoDefinition, { tokens: [] })).toThrow(StudioError)
+    expect(() => normalizeConfig(demoDefinition, { theme: [] })).toThrow(StudioError)
   })
 
   it('数组整体替换，不做逐项合并', () => {
-    const config = normalizeConfig(demoDefinition, { tokens: { subset: { space: [2, 4] } } })
-    expect(config.tokens.subset.space).toEqual([2, 4])
+    const config = normalizeConfig(demoDefinition, { theme: { spacing: [2, 4] } })
+    expect(config.theme.spacing).toEqual([2, 4])
   })
 
   it('字段级修正数字字符串', () => {
-    const config = normalizeConfig(demoDefinition, { tokens: { seed: { primaryHue: '120' } } })
-    expect(config.tokens.seed.primaryHue).toBe(120)
+    const config = normalizeConfig(demoDefinition, { theme: { accent: { hue: '120' } } })
+    expect(config.theme.accent.hue).toBe(120)
   })
 
   it('旧版本配置走 migrate', () => {
@@ -65,16 +65,16 @@ describe('normalizeConfig', () => {
         return {
           ...demoDefaults,
           meta: { ...demoDefaults.meta, name: fromVersion },
-          tokens: {
-            ...demoDefaults.tokens,
-            seed: { ...demoDefaults.tokens.seed, primaryHue: legacy.hue ?? 0 },
+          theme: {
+            ...demoDefaults.theme,
+            accent: { ...demoDefaults.theme.accent, hue: legacy.hue ?? 0 },
           },
         }
       },
     })
 
     const config = normalizeConfig(definition, { hue: 300 }, { version: '1.0.0' })
-    expect(config.tokens.seed.primaryHue).toBe(300)
+    expect(config.theme.accent.hue).toBe(300)
     expect(config.meta.name).toBe('1.0.0')
   })
 
@@ -94,15 +94,15 @@ describe('normalizeConfig', () => {
         const config = input as DemoConfig
         return {
           ...config,
-          tokens: {
-            ...config.tokens,
-            seed: { ...config.tokens.seed, primaryHue: Math.round(config.tokens.seed.primaryHue) },
+          theme: {
+            ...config.theme,
+            accent: { ...config.theme.accent, hue: Math.round(config.theme.accent.hue) },
           },
         }
       },
     })
 
-    const config = normalizeConfig(definition, { tokens: { seed: { primaryHue: 12.7 } } })
-    expect(config.tokens.seed.primaryHue).toBe(13)
+    const config = normalizeConfig(definition, { theme: { accent: { hue: 12.7 } } })
+    expect(config.theme.accent.hue).toBe(13)
   })
 })
