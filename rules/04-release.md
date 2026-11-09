@@ -22,8 +22,7 @@
 - [ ] `npm pack --dry-run` 只带 `src` / `README.md`
 - [ ] `package.json` 版本、tag、`CHANGELOG.md` 一致
 - [ ] 协议字段或行为变化写进 README「版本与兼容」
-- [ ] AI 文档同步：`rules/` / `llms.txt` / `skills.md` / `agent.md` / `AGENTS.md` 的版本戳已更新
-- [ ] 根仓 `pnpm ai-docs:check` 通过
+- [ ] 包级 AI 文档与代码一致：`rules/` / `llms.txt` / `skills.md` / `agent.md` / `AGENTS.md` 的版本戳与能力表已更新
 
 ## 兼容
 

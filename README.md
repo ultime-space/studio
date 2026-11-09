@@ -113,8 +113,8 @@ tests/
 ## 命令
 
 ```bash
-pnpm --filter @ultime/studio test
-pnpm --filter @ultime/studio typecheck
+pnpm test
+pnpm typecheck
 ```
 
 ## 边界
