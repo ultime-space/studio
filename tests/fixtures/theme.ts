@@ -46,7 +46,16 @@ export const demoDefinition: ConfiguratorDefinition<DemoConfig> = defineConfigur
   defaults: demoDefaults,
   unknownPolicy: 'reject',
   fields: [
-    { path: '/theme/accent/hue', label: '主题色相', type: 'hue', min: 0, max: 360, step: 1, unit: '°' },
+    {
+      path: '/theme/accent/hue',
+      label: '主题色相',
+      type: 'hue',
+      min: 0,
+      max: 360,
+      suggested: { min: 180, max: 240 },
+      step: 1,
+      unit: '°',
+    },
     { path: '/theme/accent/lightness', label: '明度', type: 'slider', min: 0.3, max: 0.9, step: 0.01 },
     {
       path: '/theme/accent/tone',

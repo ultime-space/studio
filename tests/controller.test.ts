@@ -148,14 +148,32 @@ describe('createConfigurator · 校验与导出', () => {
     expect(controller.getState().diagnostics).toEqual(diagnostics)
   })
 
-  it('范围错误会阻断导出', async () => {
+  it('合法域越界阻断导出', async () => {
     const controller = createConfigurator(demoDefinition)
     controller.set('/theme/accent/lightness', 0.95)
 
     const outcome = await controller.export()
     expect(outcome.ok).toBe(false)
     expect(outcome.files).toEqual([])
-    expect(outcome.diagnostics.some((item) => item.code === 'field/range')).toBe(true)
+    expect(outcome.diagnostics.some((item) => item.code === 'field/range' && item.level === 'error')).toBe(true)
+  })
+
+  it('建议区间越界只提示，不阻断导出', async () => {
+    const controller = createConfigurator(demoDefinition)
+    controller.set('/theme/accent/hue', 300)
+
+    const outcome = await controller.export()
+    expect(outcome.ok).toBe(true)
+    expect(outcome.diagnostics.some((item) => item.code === 'field/suggested' && item.level === 'warn')).toBe(true)
+  })
+
+  it('超出合法域的色相同样阻断', async () => {
+    const controller = createConfigurator(demoDefinition)
+    controller.set('/theme/accent/hue', 720)
+
+    const outcome = await controller.export()
+    expect(outcome.ok).toBe(false)
+    expect(outcome.diagnostics.some((item) => item.code === 'field/range' && item.level === 'error')).toBe(true)
   })
 
   it('导出成功时给出产物与 lock，且两次结果一致', async () => {

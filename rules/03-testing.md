@@ -1,7 +1,7 @@
 # 03 · 测试与验收
 
 > 定位：改 studio 时跑什么、什么算通过。
-> 适用版本：0.1.x
+> 适用版本：0.2.x
 > 关系：协议见 [`02-contract`](./02-contract.md)；发布检查见 [`04-release`](./04-release.md)。
 
 ---
@@ -22,7 +22,7 @@ pnpm typecheck
 | `tests/normalize.test.ts` | 默认值补齐、未知字段策略、迁移、字段级修正 |
 | `tests/contract.test.ts` | 定义协议：字段自洽 / 默认值规范形 / 往返 / 导出确定性 |
 
-- 新增协议字段：必须同时补契约测试与 README / `skills.md`。
+- 新增协议字段：必须同时补契约测试与 README / `SKILLS.md`。
 - 改导出或序列化：必须有「同输入逐字节相同」的断言。
 - 改 URL 编解码：必须覆盖旧版本串的兼容或明确迁移。
 

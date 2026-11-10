@@ -3,6 +3,7 @@
  * ---------------------------------------------------------------------------
  * 运行时只做通用的类型 / 枚举 / 范围校验；对比度、依赖闭包这类领域规则由定义的 validate() 提供。
  * `error` 阻断导出，`warn` / `info` 只提示；诊断带 path，上游据此定位到字段。
+ * 范围分两层：`min` / `max` 是合法域（越界 error），`suggested` 是建议区间（越界 warn）。
  */
 
 import type { ConfiguratorDefinition, FieldSpec } from './definition.ts'
@@ -21,8 +22,8 @@ function isOptionValue(field: FieldSpec, value: unknown): boolean {
 
 function checkField(field: FieldSpec, value: unknown): Diagnostic[] {
   const at = field.path
-  const push = (code: string, message: string): Diagnostic => ({
-    level: 'error',
+  const push = (code: string, message: string, level: DiagnosticLevel = 'error'): Diagnostic => ({
+    level,
     code: `field/${code}`,
     message: `${field.label}：${message}`,
     path: at,
@@ -37,10 +38,20 @@ function checkField(field: FieldSpec, value: unknown): Diagnostic[] {
     case 'slider':
     case 'hue': {
       if (typeof value !== 'number' || !Number.isFinite(value)) return [push('type', '应为数字')]
-      const issues: Diagnostic[] = []
-      if (field.min !== undefined && value < field.min) issues.push(push('range', `不得小于 ${field.min}`))
-      if (field.max !== undefined && value > field.max) issues.push(push('range', `不得大于 ${field.max}`))
-      return issues
+      const hard: Diagnostic[] = []
+      if (field.min !== undefined && value < field.min) hard.push(push('range', `不得小于 ${field.min}`))
+      if (field.max !== undefined && value > field.max) hard.push(push('range', `不得大于 ${field.max}`))
+      if (hard.length) return hard
+
+      const advice: Diagnostic[] = []
+      const suggested = field.suggested
+      if (suggested?.min !== undefined && value < suggested.min) {
+        advice.push(push('suggested', `建议不小于 ${suggested.min}`, 'warn'))
+      }
+      if (suggested?.max !== undefined && value > suggested.max) {
+        advice.push(push('suggested', `建议不大于 ${suggested.max}`, 'warn'))
+      }
+      return advice
     }
     case 'switch':
       return typeof value === 'boolean' ? [] : [push('type', '应为布尔值')]
