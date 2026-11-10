@@ -1,10 +1,10 @@
 # Changelog
 
-## 0.2.1 - 2026-11-10
+## 0.2.1 - 2026-11-11
 
 - 构建改用 `vp pack`，产物同时生成 `dist/index.js` 与 `dist/index.d.ts`。
 - `exports.types` 指向 `dist/index.d.ts`，包体不再包含 `src/`；安装后类型解析不依赖源码。
-- 无运行时 API 变化。
+- `PreviewModel` 新增可选 `diagnostics`，用于承载预览生成失败的原因。
 
 ## 0.2.0 - 2026-11-10
 
