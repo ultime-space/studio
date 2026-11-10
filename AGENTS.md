@@ -38,7 +38,6 @@
 ```bash
 pnpm check
 pnpm test
-pnpm typecheck
 ```
 
 - 改协议：同步 README、`SKILLS.md`、受影响的领域包与版本戳；

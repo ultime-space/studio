@@ -12,7 +12,7 @@
 pnpm add @ultime/studio
 ```
 
-- 运行环境 Node >= 22.18，或任何支持 ESM 的打包器（Vite / esbuild 等）；包发的是编译后的 ESM（`dist/`），类型来自 `src/*.ts`。
+- 运行环境 Node >= 22.18，或任何支持 ESM 的打包器（Vite / esbuild 等）；包发的是编译后的 ESM（`dist/`），类型来自 `dist/*.d.ts`。
 - 本包**不 import** 任何领域包；领域定义放在各包的 `/studio` 子入口，本包只认通用协议。
 
 ## 入口
@@ -119,7 +119,6 @@ tests/
 
 ```bash
 pnpm test
-pnpm typecheck
 ```
 
 ## 边界

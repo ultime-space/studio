@@ -4,3 +4,6 @@ coverage/
 *.log
 *.tsbuildinfo
 .DS_Store
+
+# Vite+ 生成的 Git hook dispatcher（项目自己的 hook 在 .vite-hooks/ 下）
+.vite-hooks/_/

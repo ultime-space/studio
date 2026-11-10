@@ -8,7 +8,7 @@
 
 ## 形态
 
-- **编译 ESM**：`exports` 的 `import` 指向 `dist/index.js`，由 `vp build` 生成；类型来自 `src/*.ts`。
+- **编译 ESM**：`exports` 的 `import` 指向 `dist/index.js`，由 `vp pack` 生成；类型来自 `dist/index.d.ts`，包体不含 `src`。
 - `engines.node >= 22.18`；浏览器侧需要打包器。
 - 零第三方运行时依赖。
 
@@ -18,8 +18,8 @@
 
 ## 发布前检查
 
-- [ ] `pnpm check` / `pnpm test` / `pnpm typecheck` 全绿
-- [ ] `npm pack --dry-run` 只带 `dist` / `src` / `README.md` / 附属文件（不含 `tests/` / `rules/` / `evals`）
+- [ ] `pnpm check` / `pnpm test` 全绿
+- [ ] `npm pack --dry-run` 只带 `dist` / `README.md` / `llms.txt` / `SKILLS.md` / 附属文件（不含 `tests/` / `rules/` / `evals` / `src`）
 - [ ] `package.json` 版本、tag、`CHANGELOG.md` 一致
 - [ ] 协议字段或行为变化写进 README「版本与兼容」
 - [ ] 包级 AI 文档与代码一致：`rules/` / `llms.txt` / `SKILLS.md` / `AGENTS.md` 的版本戳与能力表已更新

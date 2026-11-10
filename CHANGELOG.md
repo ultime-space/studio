@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1 - 2026-11-11
+
+- 构建改用 `vp pack`，产物同时生成 `dist/index.js` 与 `dist/index.d.ts`。
+- `exports.types` 指向 `dist/index.d.ts`，包体不再包含 `src/`；安装后类型解析不依赖源码。
+- `PreviewModel` 新增可选 `diagnostics`，用于承载预览生成失败的原因。
+
 ## 0.2.0 - 2026-11-10
 
 - **行为变更**：字段范围分两层——`min` / `max` 是合法域，越界给 `error` 并阻断导出（API 侧防乱传）；新增 `suggested` 建议区间，越界只给 `warn`。类型 / 枚举 / 缺失仍是 `error`。

@@ -1,0 +1,26 @@
+#!/bin/sh
+# ============================================================================
+# pre-commit — 提交前闸门（静态检查，不起浏览器）
+# ----------------------------------------------------------------------------
+# 先 `vp staged` 处理暂存文件，再跑包内 `check`；需要浏览器的检查不进钩子。
+# 环境不具备（没有 node）时放行并提示，不算不合格。
+# 手动安装：pnpm exec vp config --no-agent；诊断：vp hooks status
+# ============================================================================
+set -e
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "⚠ pre-commit：未找到 node，跳过静态闸门（PATH=$PATH）"
+  exit 0
+fi
+
+VP="$ROOT/node_modules/.bin/vp"
+
+echo "── pre-commit：Vite+ staged（fmt / lint）─────────────────────────────"
+"$VP" staged || exit 1
+
+echo "── pre-commit：包内静态检查 ───────────────────────────────────────────"
+"$VP" run check || exit 1
+
+echo "✓ 静态闸门通过"

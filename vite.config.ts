@@ -2,7 +2,7 @@ import { defineConfig } from 'vite-plus'
 
 const ignore = ['**/node_modules/**', '**/dist/**', '**/*.md']
 
-/** 库出口：把 TS 源码打成无依赖 ESM；Node 不支持剥离 node_modules 下的类型，所以发的是产物。 */
+/** 库出口：`vp pack` 产出 ESM 与声明；包体只发产物，不发源码。 */
 export default defineConfig({
   fmt: {
     ignorePatterns: ignore,
@@ -22,20 +22,21 @@ export default defineConfig({
   test: {
     include: ['tests/**/*.test.ts'],
   },
-  build: {
+  staged: {
+    '*': 'vp check --fix',
+  },
+  pack: {
+    entry: { index: 'src/index.ts' },
+    format: 'esm',
+    platform: 'node',
     target: 'node22',
+    dts: true,
     minify: false,
-    emptyOutDir: true,
-    lib: {
-      entry: { index: 'src/index.ts' },
-      formats: ['es'],
-    },
-    rollupOptions: {
-      external: [/^node:/],
-      output: {
-        entryFileNames: '[name].js',
-        chunkFileNames: 'chunks/[name]-[hash].js',
-      },
-    },
+    sourcemap: false,
+    clean: true,
+    publint: true,
+    attw: { level: 'error' },
+    unused: true,
+    outExtensions: () => ({ js: '.js', dts: '.d.ts' }),
   },
 })

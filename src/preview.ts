@@ -6,20 +6,9 @@
  */
 
 import type { ConfiguratorDefinition } from './definition.ts'
+import type { PreviewModel } from './preview-types.ts'
 
-export interface PreviewScenario {
-  id: string
-  label: string
-  description?: string
-}
-
-export interface PreviewModel {
-  /** 与导出一份源的整段 CSS */
-  css?: string
-  /** 兼容路径：只吃变量的宿主 */
-  vars?: Record<string, string>
-  scenarios?: readonly PreviewScenario[]
-}
+export type { PreviewModel, PreviewScenario } from './preview-types.ts'
 
 export function previewConfig<TConfig>(
   definition: ConfiguratorDefinition<TConfig>,

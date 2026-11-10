@@ -11,7 +11,6 @@
 ```bash
 pnpm check
 pnpm test
-pnpm typecheck
 ```
 
 ## 覆盖范围
