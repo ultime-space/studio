@@ -9,7 +9,11 @@
 - [ ] 没有新增第二份正文、重复入口或第二套默认值
 - [ ] 协议 / 导出 / 序列化变更已有测试与影响说明
 - [ ] 没有引入领域包依赖或 UI / IO 逻辑
-- [ ] 已跑 `pnpm check`、`pnpm test`、`pnpm typecheck`、`npm pack --dry-run`
+- [ ] 包体边界：`npm pack --dry-run` 不含 `tests` / `scripts` / `rules` / 包根 `AGENTS.md` / 构建配置 / lockfile
+- [ ] Node 基线：`engines.node >= 22.18`、产物 `target: node22` 未偏离
+- [ ] 包质量：`pnpm build` 的 `publint` / `attw` / `unused` 通过
+- [ ] 体积报告已看（`pnpm size`，只报告、不设门禁）
+- [ ] 已跑 `pnpm check`、`pnpm test`、`pnpm build`、`npm pack --dry-run`
 
 ## 审核重点
 

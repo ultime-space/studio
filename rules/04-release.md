@@ -18,7 +18,7 @@
 
 ## 发布前检查
 
-- [ ] `pnpm check` / `pnpm test` / `pnpm typecheck` 全绿
+- [ ] `pnpm check` / `pnpm test` 全绿
 - [ ] `npm pack --dry-run` 只带 `dist` / `src` / `README.md` / 附属文件（不含 `tests/` / `rules/` / `evals`）
 - [ ] `package.json` 版本、tag、`CHANGELOG.md` 一致
 - [ ] 协议字段或行为变化写进 README「版本与兼容」

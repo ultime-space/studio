@@ -1,6 +1,6 @@
 {
   "name": "@ultime/studio",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Ultime · studio：配置器无头运行时（定义 / 状态 / 规范化 / 诊断 / 预览模型 / 导出清单），纯 TS、零依赖、不碰 DOM 与文件系统",
   "keywords": [
     "configuration",
@@ -23,7 +23,6 @@
   },
   "files": [
     "dist",
-    "src",
     "README.md",
     "llms.txt",
     "SKILLS.md",
@@ -34,7 +33,7 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     }
   },
@@ -42,17 +41,29 @@
     "access": "public"
   },
   "scripts": {
-    "build": "vp build",
+    "build": "vp pack",
     "check": "vp check",
     "test": "vp test",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "prepublishOnly": "pnpm check && pnpm test && pnpm build"
+    "size": "size-limit --json",
+    "prepublishOnly": "pnpm check && pnpm test && pnpm build",
+    "prepare": "vp config --no-agent"
   },
   "devDependencies": {
+    "@arethetypeswrong/core": "^0.18.5",
+    "@size-limit/preset-small-lib": "^14.3.0",
     "@types/node": "^22.20.5",
+    "publint": "^0.3.25",
+    "size-limit": "^14.3.0",
     "typescript": "^5.9.3",
+    "unplugin-unused": "^0.6.0",
     "vite-plus": "1.5.1"
   },
+  "size-limit": [
+    {
+      "name": "@ultime/studio",
+      "path": "dist/index.js"
+    }
+  ],
   "engines": {
     "node": ">=22.18"
   },

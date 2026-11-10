@@ -9,7 +9,7 @@
  */
 
 import type { Awaitable, Diagnostic, ExportContext, ExportResult, ValidationContext } from './types.ts'
-import type { PreviewModel } from './preview.ts'
+import type { PreviewModel } from './preview-types.ts'
 
 export type FieldType = 'hue' | 'slider' | 'number' | 'select' | 'text' | 'color' | 'switch' | 'multi-select' | 'custom'
 
