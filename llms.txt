@@ -1,18 +1,15 @@
 # @ultime/studio · AI 索引
 
-适用版本：0.1.x
+适用版本：0.2.x
 
 ## 去哪找
 
 - 怎么用：[README.md](./README.md)
-- 开发规则：[rules/README.md](./rules/README.md)
-- 可调用能力：[skills.md](./skills.md)
-- 操作约束：[agent.md](./agent.md)
-- 仓库入口：[AGENTS.md](./AGENTS.md)
+- 可调用能力：[SKILLS.md](./SKILLS.md)
 
 ## 机器入口
 
-- 协议形状：`src/definition.ts`
+- 公共出口：`@ultime/studio` 的 `defineConfigurator` / `createConfigurator` / `exportConfig` / `normalizeConfig` / `assertContract`
 - 契约测试：`assertContract(definition)`
 - 校验 / 导出：`createConfigurator` / `exportConfig`
 

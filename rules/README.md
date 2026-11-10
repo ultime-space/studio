@@ -1,7 +1,7 @@
 # studio · 开发规则
 
 > 定位：本包开发规范的索引。只写判断、边界与反例；协议与 API 以 README 和 `src/definition.ts` 为准。
-> 适用版本：0.1.x
+> 适用版本：0.2.x
 > 关系：入口见 [`AGENTS.md`](../AGENTS.md)；怎么用见 [`README.md`](../README.md)。
 
 ---

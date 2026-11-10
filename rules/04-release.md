@@ -1,7 +1,7 @@
 # 04 · 版本与发布
 
 > 定位：studio 的编译 ESM 形态、发布顺序与检查。
-> 适用版本：0.1.x
+> 适用版本：0.2.x
 > 关系：测试见 [`03-testing`](./03-testing.md)；发布由仓库 owner 按本清单执行。
 
 ---
@@ -19,10 +19,11 @@
 ## 发布前检查
 
 - [ ] `pnpm check` / `pnpm test` / `pnpm typecheck` 全绿
-- [ ] `npm pack --dry-run` 只带 `src` / `README.md`
+- [ ] `npm pack --dry-run` 只带 `dist` / `src` / `README.md` / 附属文件（不含 `tests/` / `rules/` / `evals`）
 - [ ] `package.json` 版本、tag、`CHANGELOG.md` 一致
 - [ ] 协议字段或行为变化写进 README「版本与兼容」
-- [ ] 包级 AI 文档与代码一致：`rules/` / `llms.txt` / `skills.md` / `agent.md` / `AGENTS.md` 的版本戳与能力表已更新
+- [ ] 包级 AI 文档与代码一致：`rules/` / `llms.txt` / `SKILLS.md` / `AGENTS.md` 的版本戳与能力表已更新
+- [ ] 包内配套设施：`npm pack --dry-run` 含 `llms.txt` / `SKILLS.md`，且与 `exports` 对齐
 
 ## 兼容
 

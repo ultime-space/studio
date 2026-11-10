@@ -4,6 +4,8 @@
  * 定义包只写领域规则：字段、默认值、预设、校验、预览、导出；
  * 表单层级、控件形态、窄屏收纳归上游 UI，运行时只给元数据与状态。
  * `FieldSpec.type` 是 UI 提示；运行时只做通用的类型 / 枚举 / 范围校验。
+ * `hue` 只是控件提示（色相盘），运行时等同 `number`，不强制 0–360。
+ * `min` / `max` 是合法域，越界给 `error` 并阻断导出；`suggested` 是建议区间，越界只给 `warn`。
  */
 
 import type { Awaitable, Diagnostic, ExportContext, ExportResult, ValidationContext } from './types.ts'
@@ -32,8 +34,12 @@ export interface FieldSpec {
   group?: string
   hint?: string
   optional?: boolean
+  /** 合法域下限；越界给 error，阻断导出 */
   min?: number
+  /** 合法域上限；越界给 error，阻断导出 */
   max?: number
+  /** 建议区间；越界只给 warn，不阻断导出（审美取舍归用户） */
+  suggested?: { min?: number; max?: number }
   step?: number
   unit?: string
   /** `select` / `multi-select` 必填 */

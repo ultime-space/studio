@@ -23,6 +23,8 @@ pnpm add @ultime/studio
 
 领域定义不在这里：各领域包自行提供 `/studio` 子入口，本包只认通用协议。
 
+AI 入口：[`llms.txt`](./llms.txt)（路由）与 [`SKILLS.md`](./SKILLS.md)（能力表）随包发布。
+
 ## 三层分工
 
 | 层 | 谁写 | 内容 |
@@ -63,12 +65,15 @@ const direct = await exportConfig(configurator, config)
 | 项 | 约定 |
 |---|---|
 | `fields` | 唯一 schema 载体；`type` 只是 UI 提示，运行时只做通用类型 / 枚举 / 范围校验 |
+| `hue` | 只是控件提示（色相盘）；运行时等同 `number`，不强制 0–360，也不隐式回绕 |
+| `min` / `max` | 合法域；越界给 `error` 并阻断导出（防乱传导致产物不可用） |
+| `suggested` | 建议区间；越界只给 `warn`，不阻断导出 —— 风格好不好看由用户决定 |
 | `custom` | 通用校验跳过，语义交给定义的 `validate()` |
 | `set(path, value)` | 只改一个 JSON Pointer，做字段级取值修正；不自动重算诊断 |
 | `patch(patch)` | `add` / `remove` / `replace` 子集；AI 与诊断 fix 都产出 patch，可审阅 |
 | `replace` / `applyPreset` | 整体替换 config，baseline 不变 |
 | `reset` | 默认回 baseline；`mode: 'defaults'` 回定义默认值；带 `path` 只复位一个字段 |
-| `validate()` | 通用字段校验 + 定义 `validate()`；`error` 阻断导出，`warn` / `info` 不阻断 |
+| `validate()` | 通用字段校验 + 定义 `validate()`；类型 / 枚举 / 缺失 / 合法域越界 / 领域阻断给 `error`，建议类给 `warn` / `info` |
 | `export()` | 规范化 → 校验 → 定义 `export()`；返回 `ExportOutcome`，无文件 IO / 下载 |
 | `serialize()` | 稳定 JSON（对象键排序），可直接落项目配置（字段由定义包决定），不含派生值 |
 | `toURL()` / `fromURL()` | 纯编解码，`#studio=v1.…`，版本随串走；不依赖 `btoa` / `Buffer` / localStorage |
@@ -126,7 +131,7 @@ pnpm typecheck
 
 ## 版本与兼容
 
-- 当前 `0.1.x`；0.x 阶段 `ConfiguratorDefinition` 仍可能调整。
+- 当前 `0.2.x`；0.x 阶段 `ConfiguratorDefinition` 仍可能调整。
 - 破坏性变更写进 [CHANGELOG](./CHANGELOG.md)，并在本节目说明迁移方式；协议变更先发 studio，再发依赖包。
 - 零第三方运行时依赖。
 

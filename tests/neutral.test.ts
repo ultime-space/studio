@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vite-plus/test'
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
 const SELF = path.join(ROOT, 'tests/neutral.test.ts')
 
-const DOCS = ['README.md', 'AGENTS.md', 'CONTRIBUTING.md', 'CHANGELOG.md', 'agent.md', 'skills.md', 'llms.txt']
+const DOCS = ['README.md', 'AGENTS.md', 'CONTRIBUTING.md', 'CHANGELOG.md', 'SKILLS.md', 'llms.txt']
 
 /** 本包是上游通用运行时：不出现其它包的名称或领域示例。 */
 const FORBIDDEN = [
