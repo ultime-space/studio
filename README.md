@@ -132,6 +132,7 @@ pnpm test
 ## 版本与兼容
 
 - 当前 `0.2.x`；0.x 阶段 `ConfiguratorDefinition` 仍可能调整。
+- 0.2.2 发布产物默认压缩；协议与导出不变。
 - 破坏性变更写进 [CHANGELOG](./CHANGELOG.md)，并在本节目说明迁移方式；协议变更先发 studio，再发依赖包。
 - 零第三方运行时依赖。
 
