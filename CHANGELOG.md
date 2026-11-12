@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0 - 待发布
+## 0.3.0 - 2026-11-12
 
 - `Diagnostic` 新增可选 `hint`；通用字段诊断补齐修复说明。
 - 契约测试新增 `inspect` / `preview` 的确定性、只读与抛错检查（`inspect/*` / `preview/*`）。

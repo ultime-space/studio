@@ -132,8 +132,8 @@ pnpm test
 
 ## 版本与兼容
 
-- 当前 `0.2.x`；0.x 阶段 `ConfiguratorDefinition` 仍可能调整。
-- 下一版 0.3：诊断新增 `hint`，契约测试补 `inspect` / `preview` 的确定性与只读检查；协议形状只增不改。
+- 当前 `0.3.x`；0.x 阶段 `ConfiguratorDefinition` 仍可能调整。
+- 0.3.0：诊断新增 `hint`，契约测试补 `inspect` / `preview` 的确定性与只读检查；协议形状只增不改。
 - 破坏性变更写进 [CHANGELOG](./CHANGELOG.md)，并在本节目说明迁移方式；协议变更先发 studio，再发依赖包。
 - 零第三方运行时依赖。
 
