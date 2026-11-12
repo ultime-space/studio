@@ -24,14 +24,15 @@ import {
 | `createConfigurator(def)` | 定义 | 有状态控制器：`set` / `patch` / `reset` / `validate` / `export` / `serialize` / `toURL` / `fromURL` / `inspect` / `preview` |
 | `normalizeConfig(def, raw)` | 原始 JSON | 补默认、未知字段策略、迁移后的配置 |
 | `exportConfig(def, config)` | 配置 | `ExportOutcome`（无文件 IO） |
-| `assertContract(def)` | 定义 | 契约断言：字段自洽 / 默认值 / 往返 / 确定性 |
+| `assertContract(def)` | 定义 | 契约断言：字段自洽 / 默认值 / 往返 / `inspect`·`preview` 确定性与只读 / 导出确定性 |
 
 ## 错误语义
 
 - `validate()` 返回诊断数组：类型 / 枚举 / 缺失 / `min`·`max` 合法域越界 / 领域阻断是 `error` 并阻断导出；`suggested` 建议区间与提示是 `warn` / `info`，不阻断。
+- 诊断形状 `{ level, code, message, path?, hint?, fix? }`；`hint` 是下一步怎么改，`fix` 是可审阅 patch。
 - `export()` 不抛异常；失败时返回 `ok: false` 与诊断。
 - 未知字段按 `unknownPolicy` 处理，只查对象键、不深入数组元素。
-- `$schema` / `$version` 视为元信息，不参与未知字段判定。
+- `$schema` / `$version` 视为元信息，不参与未知字段判定；`$version` 与定义不一致时必须有 `migrate`，否则抛 `config/version`。
 
 ## 确定性
 

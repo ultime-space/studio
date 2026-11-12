@@ -22,48 +22,65 @@ function isOptionValue(field: FieldSpec, value: unknown): boolean {
 
 function checkField(field: FieldSpec, value: unknown): Diagnostic[] {
   const at = field.path
-  const push = (code: string, message: string, level: DiagnosticLevel = 'error'): Diagnostic => ({
+  const push = (code: string, message: string, level: DiagnosticLevel = 'error', hint?: string): Diagnostic => ({
     level,
     code: `field/${code}`,
     message: `${field.label}：${message}`,
     path: at,
+    ...(hint === undefined ? {} : { hint }),
   })
 
   if (isMissing(value)) {
-    return field.optional ? [] : [push('missing', '必填项缺失')]
+    return field.optional ? [] : [push('missing', '必填项缺失', 'error', '填写该字段，或把字段标为 optional')]
   }
 
   switch (field.type) {
     case 'number':
     case 'slider':
     case 'hue': {
-      if (typeof value !== 'number' || !Number.isFinite(value)) return [push('type', '应为数字')]
+      if (typeof value !== 'number' || !Number.isFinite(value)) return [push('type', '应为数字', 'error', '改为数字')]
+      const bounds = `${field.min ?? '−∞'}–${field.max ?? '∞'}`
       const hard: Diagnostic[] = []
-      if (field.min !== undefined && value < field.min) hard.push(push('range', `不得小于 ${field.min}`))
-      if (field.max !== undefined && value > field.max) hard.push(push('range', `不得大于 ${field.max}`))
+      if (field.min !== undefined && value < field.min) {
+        hard.push(push('range', `不得小于 ${field.min}`, 'error', `调整到 ${bounds}`))
+      }
+      if (field.max !== undefined && value > field.max) {
+        hard.push(push('range', `不得大于 ${field.max}`, 'error', `调整到 ${bounds}`))
+      }
       if (hard.length) return hard
 
       const advice: Diagnostic[] = []
       const suggested = field.suggested
       if (suggested?.min !== undefined && value < suggested.min) {
-        advice.push(push('suggested', `建议不小于 ${suggested.min}`, 'warn'))
+        advice.push(
+          push('suggested', `建议不小于 ${suggested.min}`, 'warn', `参考区间 ${suggested.min}–${suggested.max ?? '∞'}`),
+        )
       }
       if (suggested?.max !== undefined && value > suggested.max) {
-        advice.push(push('suggested', `建议不大于 ${suggested.max}`, 'warn'))
+        advice.push(
+          push(
+            'suggested',
+            `建议不大于 ${suggested.max}`,
+            'warn',
+            `参考区间 ${suggested.min ?? '−∞'}–${suggested.max}`,
+          ),
+        )
       }
       return advice
     }
     case 'switch':
-      return typeof value === 'boolean' ? [] : [push('type', '应为布尔值')]
+      return typeof value === 'boolean' ? [] : [push('type', '应为布尔值', 'error', '改为 true / false')]
     case 'text':
     case 'color':
-      return typeof value === 'string' ? [] : [push('type', '应为字符串')]
+      return typeof value === 'string' ? [] : [push('type', '应为字符串', 'error', '改为字符串')]
     case 'select':
-      return isOptionValue(field, value) ? [] : [push('enum', '取值不在选项内')]
+      return isOptionValue(field, value) ? [] : [push('enum', '取值不在选项内', 'error', '从 options 中选一个')]
     case 'multi-select': {
-      if (!Array.isArray(value)) return [push('type', '应为数组')]
+      if (!Array.isArray(value)) return [push('type', '应为数组', 'error', '改为数组')]
       const invalid = value.filter((item) => !isOptionValue(field, item))
-      return invalid.length ? [push('enum', `取值不在选项内：${invalid.join('、')}`)] : []
+      return invalid.length
+        ? [push('enum', `取值不在选项内：${invalid.join('、')}`, 'error', '移除不在 options 中的取值')]
+        : []
     }
     case 'custom':
       return []

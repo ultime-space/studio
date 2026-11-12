@@ -73,6 +73,35 @@ function collectDefinitionIssues<TConfig>(definition: ConfiguratorDefinition<TCo
   return issues
 }
 
+/** 只读派生入口（inspect / preview）必须确定、且不改写配置。 */
+function checkReadOnly<TConfig>(
+  name: 'inspect' | 'preview',
+  read: ((config: TConfig) => unknown) | undefined,
+  config: TConfig,
+  issue: (code: string, message: string) => void,
+): void {
+  if (!read) return
+
+  const before = stableStringify(config)
+  let first: string
+  try {
+    first = stableStringify(read(config))
+  } catch (error) {
+    issue(`${name}/error`, `${name}() 抛错：${(error as Error).message}`)
+    return
+  }
+
+  if (stableStringify(config) !== before) issue(`${name}/mutation`, `${name}() 改写了配置`)
+
+  try {
+    if (stableStringify(read(config)) !== first) {
+      issue(`${name}/deterministic`, `${name}() 同输入两次结果不一致`)
+    }
+  } catch (error) {
+    issue(`${name}/error`, `${name}() 第二次调用抛错：${(error as Error).message}`)
+  }
+}
+
 async function collectBehaviorIssues<TConfig>(
   definition: ConfiguratorDefinition<TConfig>,
   options: ContractOptions,
@@ -121,6 +150,9 @@ async function collectBehaviorIssues<TConfig>(
   } catch (error) {
     issue('validate/defaults', `默认值校验失败：${(error as Error).message}`)
   }
+
+  checkReadOnly('inspect', definition.inspect?.bind(definition), defaults, issue)
+  checkReadOnly('preview', definition.preview?.bind(definition), defaults, issue)
 
   if (options.export !== false) {
     try {
