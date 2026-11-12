@@ -78,8 +78,9 @@ const direct = await exportConfig(configurator, config)
 | `export()` | 规范化 → 校验 → 定义 `export()`；返回 `ExportOutcome`，无文件 IO / 下载 |
 | `serialize()` | 稳定 JSON（对象键排序），可直接落项目配置（字段由定义包决定），不含派生值 |
 | `toURL()` / `fromURL()` | 纯编解码，`#studio=v1.…`，版本随串走；不依赖 `btoa` / `Buffer` / localStorage |
-| `inspect()` | 只读派生值，供上游展示「配置 → 派生」；不进 config、不进导出 |
-| `preview()` | `PreviewModel.css` 是主路径，必须与 `export()` 同源；`vars` 只做兼容 |
+| `inspect()` | 只读派生值，供上游展示「配置 → 派生」；不进 config、不进导出；契约测试检查确定性与不改写配置 |
+| `preview()` | `PreviewModel.css` 是主路径，必须与 `export()` 同源；`vars` 只做兼容；契约测试检查确定性与不改写配置 |
+| 诊断 | `{ level, code, message, path?, hint?, fix? }`；`hint` 是下一步怎么改，`fix` 是可审阅 patch |
 
 **四条硬约束**：先规范化再导出；导出确定性（同输入逐字节相同、lock 不含时间戳）；预览与导出同源；运行时不决定布局与控件形态。
 
@@ -93,7 +94,7 @@ const direct = await exportConfig(configurator, config)
 ```ts
 import { assertContract } from '@ultime/studio'
 
-await assertContract(configurator)   // 字段自洽 / 默认值规范形 / 往返 / 默认值校验 / 导出确定性
+await assertContract(configurator)   // 字段自洽 / 默认值规范形 / 往返 / 默认值校验 / inspect·preview 确定性与只读 / 导出确定性
 ```
 
 定义包自己再补领域 golden 测试（同一份输入产物逐字节一致）。
@@ -132,7 +133,7 @@ pnpm test
 ## 版本与兼容
 
 - 当前 `0.2.x`；0.x 阶段 `ConfiguratorDefinition` 仍可能调整。
-- 0.2.2 发布产物默认压缩；协议与导出不变。
+- 下一版 0.3：诊断新增 `hint`，契约测试补 `inspect` / `preview` 的确定性与只读检查；协议形状只增不改。
 - 破坏性变更写进 [CHANGELOG](./CHANGELOG.md)，并在本节目说明迁移方式；协议变更先发 studio，再发依赖包。
 - 零第三方运行时依赖。
 

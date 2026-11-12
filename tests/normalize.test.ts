@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vite-plus/test'
-import { defineConfigurator, normalizeConfig, StudioError, type ConfiguratorDefinition } from '../src/index.ts'
+import {
+  defineConfigurator,
+  deserializeConfig,
+  normalizeConfig,
+  StudioError,
+  type ConfiguratorDefinition,
+} from '../src/index.ts'
 import { demoDefaults, demoDefinition, type DemoConfig } from './fixtures/theme.ts'
 
 const withPolicy = (policy: 'reject' | 'strip' | 'allow'): ConfiguratorDefinition<DemoConfig> => ({
@@ -85,6 +91,23 @@ describe('normalizeConfig', () => {
     } catch (error) {
       expect((error as StudioError).code).toBe('config/version')
     }
+  })
+
+  it('JSON 根上的 $version 与定义一致时不迁移，且不进入配置', () => {
+    const config = deserializeConfig(demoDefinition, JSON.stringify({ $version: '1.0.0', meta: { name: 'x' } }))
+    expect(config.meta.name).toBe('x')
+    expect('$version' in config).toBe(false)
+  })
+
+  it('JSON 根上的 $version 与定义不一致且无 migrate 时抛错', () => {
+    expect(() => deserializeConfig(demoDefinition, JSON.stringify({ $version: '0.9.0' }))).toThrow(StudioError)
+  })
+
+  it('反序列化按 unknownPolicy 处理未知字段', () => {
+    const text = JSON.stringify({ nope: 1 })
+    expect(() => deserializeConfig(demoDefinition, text)).toThrow(StudioError)
+    expect('nope' in deserializeConfig(withPolicy('strip'), text)).toBe(false)
+    expect((deserializeConfig(withPolicy('allow'), text) as unknown as Record<string, unknown>).nope).toBe(1)
   })
 
   it('definition.normalize 在补默认之后执行', () => {

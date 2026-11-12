@@ -69,6 +69,42 @@ describe('checkContract', () => {
     expect(report.issues.map((item) => item.code)).toContain('export/deterministic')
   })
 
+  it('preview 不确定会被抓出来', async () => {
+    let calls = 0
+    const definition = defineConfigurator<DemoConfig>({
+      ...demoDefinition,
+      preview: (config) => ({ css: `calls:${(calls += 1)}; hue:${config.theme.accent.hue}` }),
+    })
+
+    const report = await checkContract(definition, { export: false })
+    expect(report.issues.map((item) => item.code)).toContain('preview/deterministic')
+  })
+
+  it('preview 改写配置会被抓出来', async () => {
+    const definition = defineConfigurator<DemoConfig>({
+      ...demoDefinition,
+      preview: (config) => {
+        config.meta.name = 'mutated'
+        return { css: '' }
+      },
+    })
+
+    const report = await checkContract(definition, { export: false })
+    expect(report.issues.map((item) => item.code)).toContain('preview/mutation')
+  })
+
+  it('inspect 抛错会被抓出来', async () => {
+    const definition = defineConfigurator<DemoConfig>({
+      ...demoDefinition,
+      inspect: () => {
+        throw new Error('boom')
+      },
+    })
+
+    const report = await checkContract(definition, { export: false })
+    expect(report.issues.map((item) => item.code)).toContain('inspect/error')
+  })
+
   it('assertContract 在不合格时抛错', async () => {
     const definition = defineConfigurator<DemoConfig>({ ...demoDefinition, id: '' })
     await expect(assertContract(definition, { export: false })).rejects.toThrow(/adapter 契约未通过/)

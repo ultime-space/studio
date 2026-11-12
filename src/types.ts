@@ -38,6 +38,8 @@ export interface Diagnostic {
   message: string
   /** 字段锚点，JSON Pointer */
   path?: string
+  /** 可执行的修复说明；比 message 更接近「下一步做什么」 */
+  hint?: string
   fix?: DiagnosticFix
 }
 

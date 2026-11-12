@@ -27,6 +27,12 @@
 | `inspect()` | 只读派生值；不进 config、不进导出 |
 | `preview()` | `PreviewModel.css` 是主路径，必须与 `export()` 同源 |
 
+## 诊断
+
+- 形状：`{ level, code, message, path?, hint?, fix? }`；`path` 是 JSON Pointer，`hint` 写下一步怎么改，`fix` 给可审阅的 patch。
+- 级别：类型 / 枚举 / 缺失 / 合法域越界 / 领域阻断是 `error`；建议区间与提示是 `warn` / `info`。
+- 通用字段诊断自带 `hint`；领域 `validate()` 有明确修法时也应给 `hint`，不确定就不编。
+
 ## 四条硬约束
 
 1. 先规范化再导出；
@@ -38,3 +44,4 @@
 
 - 在 `set()` 里顺手重算诊断：调用方无法控制节奏，历史与 patch 也会失真。
 - `preview()` 自己拼一套 CSS：与导出不同源，预览通过不代表导出可用。
+- `preview()` / `inspect()` 改写 config：只读入口不得有副作用。

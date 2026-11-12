@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0 - 待发布
+
+- `Diagnostic` 新增可选 `hint`；通用字段诊断补齐修复说明。
+- 契约测试新增 `inspect` / `preview` 的确定性、只读与抛错检查（`inspect/*` / `preview/*`）。
+- 补 `$version` 迁移与未知字段策略的导入测试；协议形状只增不改。
+
 ## 0.2.2 - 2026-11-11
 
 - 发布产物默认压缩：`dist/*.js` 开启 `minify`，去掉格式与注释；`dist/*.d.ts` 保持可读，`sourcemap` 仍不随包发布。
