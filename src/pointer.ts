@@ -37,16 +37,18 @@ function parentPointer(tokens: readonly string[]): string {
   return parents.length ? `/${parents.map(escapeToken).join('/')}` : ''
 }
 
+const ARRAY_INDEX = /^(0|[1-9]\d*)$/
+
 function isIndex(token: string): boolean {
-  return token === '-' || /^\d+$/.test(token)
+  return token === '-' || ARRAY_INDEX.test(token)
 }
 
 export function getAt(root: unknown, path: string): unknown {
   let node = root
   for (const token of parsePointer(path)) {
     if (Array.isArray(node)) {
-      const index = Number(token)
-      node = Number.isInteger(index) ? node[index] : undefined
+      if (!ARRAY_INDEX.test(token)) return undefined
+      node = node[Number(token)]
     } else if (isPlainObject(node)) {
       node = node[token]
     } else {
@@ -62,8 +64,11 @@ function containerFor(next: string): Record<string, unknown> | unknown[] {
 }
 
 function arrayIndex(token: string, path: string, max: number): number {
+  if (!ARRAY_INDEX.test(token)) {
+    throw new StudioError('pointer/invalid', `非法数组下标：${path}`, path)
+  }
   const index = Number(token)
-  if (!Number.isInteger(index) || index < 0 || index > max) {
+  if (index > max) {
     throw new StudioError('pointer/invalid', `数组下标越界：${path}`, path)
   }
   return index
@@ -106,21 +111,24 @@ export function removeAt(root: unknown, path: string): void {
   const parent = getAt(root, parentPointer(tokens))
   const last = tokens[tokens.length - 1]
   if (Array.isArray(parent)) {
-    const index = Number(last)
-    if (Number.isInteger(index) && index >= 0 && index < parent.length) parent.splice(index, 1)
+    parent.splice(arrayIndex(last, path, parent.length - 1), 1)
   } else if (isPlainObject(parent)) {
     delete parent[last]
   }
 }
 
 function isArrayIndex(token: string, length: number): boolean {
-  return token === '-' || (/^\d+$/.test(token) && Number(token) <= length)
+  return token === '-' || (ARRAY_INDEX.test(token) && Number(token) <= length)
 }
 
 /** 应用一段 patch；任何非法操作都在写坏配置前抛出 */
 export function applyPatch<TConfig>(config: TConfig, patch: ConfigPatch): TConfig {
   const next = JSON.parse(JSON.stringify(config)) as TConfig
   for (const operation of patch) {
+    const op = operation.op as string
+    if (op !== 'add' && op !== 'remove' && op !== 'replace') {
+      throw new StudioError('patch/invalid', `未知 patch 操作：${op}`, operation.path)
+    }
     const tokens = parsePointer(operation.path)
     const parent = tokens.length ? getAt(next, parentPointer(tokens)) : undefined
     const last = tokens[tokens.length - 1]

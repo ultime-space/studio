@@ -37,6 +37,15 @@ export function createLock(config: unknown, files: readonly Artifact[]): LockSum
   return { configHash: hashText(stableStringify(config)), artifacts }
 }
 
+function duplicatePath(files: readonly Artifact[]): string | undefined {
+  const seen = new Set<string>()
+  for (const file of files) {
+    if (seen.has(file.path)) return file.path
+    seen.add(file.path)
+  }
+  return undefined
+}
+
 /** 无状态导出：给 CLI / AI / 一次性导出用，不需要先建控制器 */
 export async function exportConfig<TConfig>(
   definition: ConfiguratorDefinition<TConfig>,
@@ -48,6 +57,22 @@ export async function exportConfig<TConfig>(
   if (hasErrors(diagnostics)) return { ok: false, files: [], diagnostics }
 
   const result = await definition.export(config, context)
+  const duplicate = duplicatePath(result.files)
+  if (duplicate) {
+    return {
+      ok: false,
+      files: [],
+      diagnostics: [
+        ...diagnostics,
+        {
+          level: 'error',
+          code: 'export/duplicate-path',
+          message: `产物路径重复：${duplicate}`,
+          path: duplicate,
+        },
+      ],
+    }
+  }
   return {
     ok: true,
     files: result.files,
