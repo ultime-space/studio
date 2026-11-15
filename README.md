@@ -133,6 +133,7 @@ pnpm test
 ## 版本与兼容
 
 - 当前 `0.3.x`；0.x 阶段 `ConfiguratorDefinition` 仍可能调整。
+- 0.3.1：`$version` 参与迁移并从配置剥离；JSON Pointer 严格校验数组下标；`applyPatch` 拒绝未知 op；重复产物路径返回 error 诊断。
 - 0.3.0：诊断新增 `hint`，契约测试补 `inspect` / `preview` 的确定性与只读检查；协议形状只增不改。
 - 破坏性变更写进 [CHANGELOG](./CHANGELOG.md)，并在本节目说明迁移方式；协议变更先发 studio，再发依赖包。
 - 零第三方运行时依赖。

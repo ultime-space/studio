@@ -3,6 +3,7 @@ import {
   defineConfigurator,
   deserializeConfig,
   normalizeConfig,
+  serializeConfig,
   StudioError,
   type ConfiguratorDefinition,
 } from '../src/index.ts'
@@ -46,6 +47,34 @@ describe('normalizeConfig', () => {
   it('根上的 $schema 视为元信息，不参与未知字段判定', () => {
     const config = normalizeConfig(demoDefinition, { $schema: './schema.json' })
     expect((config as unknown as Record<string, unknown>).$schema).toBe('./schema.json')
+  })
+
+  it('根上的 $version 用于迁移并从结果剥离', () => {
+    const migrating: ConfiguratorDefinition<DemoConfig> = {
+      ...demoDefinition,
+      version: '2.0.0',
+      migrate: (input) => {
+        const old = input as { meta?: { name?: string } }
+        return { ...demoDefaults, meta: { ...demoDefaults.meta, name: `migrated:${old.meta?.name ?? ''}` } }
+      },
+    }
+    const config = normalizeConfig(migrating, { $version: '1.0.0', meta: { name: 'old' } })
+    expect(config.meta.name).toBe('migrated:old')
+    expect('$version' in (config as unknown as Record<string, unknown>)).toBe(false)
+  })
+
+  it('旧 $version 且无 migrate 抛 config/version', () => {
+    expect(() => normalizeConfig(demoDefinition, { $version: '0.9.0' })).toThrow(StudioError)
+    try {
+      normalizeConfig(demoDefinition, { $version: '0.9.0' })
+    } catch (error) {
+      expect((error as StudioError).code).toBe('config/version')
+    }
+  })
+
+  it('serializeConfig 不输出 $version', () => {
+    const text = serializeConfig(demoDefinition, { $version: '1.0.0' } as unknown as DemoConfig)
+    expect(text).not.toContain('$version')
   })
 
   it('类型不匹配直接抛错', () => {

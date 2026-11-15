@@ -23,6 +23,7 @@ import {
   stableStringify,
   StudioError,
   applyPatch,
+  type ConfigPatch,
 } from '../src/index.ts'
 import { demoDefaults, demoDefinition } from './fixtures/theme.ts'
 
@@ -73,6 +74,14 @@ describe('studio · JSON Pointer', () => {
     expect(() => removeAt(root, '')).toThrow(StudioError)
   })
 
+  it('数组下标必须是 0 或非前导零整数', () => {
+    expect(getAt({ list: ['x', 'y'] }, '/list/')).toBeUndefined()
+    expect(getAt({ list: ['x', 'y'] }, '/list/01')).toBeUndefined()
+    expect(() => setAt({ list: ['x'] }, '/list/', 'z')).toThrow(StudioError)
+    expect(() => setAt({ list: ['x'] }, '/list/01', 'z')).toThrow(StudioError)
+    expect(() => removeAt({ list: ['x'] }, '/list/01')).toThrow(StudioError)
+  })
+
   it('applyPatch 支持 add / replace / remove，且不改原对象', () => {
     const base = { list: ['a'], nested: { value: 1 } }
     const next = applyPatch(base, [
@@ -83,6 +92,13 @@ describe('studio · JSON Pointer', () => {
 
     expect(next).toEqual({ list: ['b'], nested: { value: 2 } })
     expect(base).toEqual({ list: ['a'], nested: { value: 1 } })
+  })
+
+  it('applyPatch 拒绝未知 op 与越界 remove', () => {
+    expect(() => applyPatch({ a: 1 }, [{ op: 'move', path: '/a', value: 2 }] as unknown as ConfigPatch)).toThrow(
+      StudioError,
+    )
+    expect(() => applyPatch({ list: [1] }, [{ op: 'remove', path: '/list/2' }])).toThrow(StudioError)
   })
 
   it('diffPaths 返回排序后的叶子路径', () => {
@@ -135,6 +151,22 @@ describe('studio · 导出与预览', () => {
     expect(outcome.ok).toBe(false)
     expect(outcome.files).toEqual([])
     expect(outcome.diagnostics.some((item) => item.code === 'demo/space-empty')).toBe(true)
+  })
+
+  it('产物路径重复返回 error 诊断', async () => {
+    const duplicate = {
+      ...demoDefinition,
+      export: async () => ({
+        files: [
+          { path: 'a.css', content: '1' },
+          { path: 'a.css', content: '2' },
+        ],
+      }),
+    }
+    const outcome = await exportConfig(duplicate, demoDefaults)
+
+    expect(outcome.ok).toBe(false)
+    expect(outcome.diagnostics.some((item) => item.code === 'export/duplicate-path')).toBe(true)
   })
 
   it('previewConfig 直接返回定义包的预览模型', () => {

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1 - 2026-11-15
+
+- `normalizeConfig` 读取根 `$version` 参与迁移，并在规范化结果中剥离；`serializeConfig` 不再输出 `$version`。
+- JSON Pointer 数组下标只接受 `0` 或非前导零整数；空段 / 前导零不再命中数组。
+- `applyPatch` 拒绝未知 op；数组 `remove` 越界抛错。
+- 导出产物路径重复返回 `export/duplicate-path` error 诊断，不再静默覆盖 lock。
+
 ## 0.3.0 - 2026-11-12
 
 - `Diagnostic` 新增可选 `hint`；通用字段诊断补齐修复说明。

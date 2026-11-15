@@ -152,6 +152,12 @@ function migrate(definition: ConfiguratorDefinition<unknown>, input: unknown, ve
   return definition.migrate(input, version)
 }
 
+function withoutVersion(input: Record<string, unknown>): Record<string, unknown> {
+  const copy = { ...input }
+  delete copy.$version
+  return copy
+}
+
 /** 规范化：输入可以是任意 JSON（含空），输出一定是完整、纯 JSON 的配置 */
 export function normalizeConfig<TConfig>(
   definition: ConfiguratorDefinition<TConfig>,
@@ -162,7 +168,9 @@ export function normalizeConfig<TConfig>(
     throw new StudioError('config/type', `定义 ${definition.id} 的 defaults 必须是对象`)
   }
 
-  const migrated = migrate(definition as ConfiguratorDefinition<unknown>, input, options.version)
+  const declared = isPlainObject(input) && typeof input.$version === 'string' ? input.$version : undefined
+  const source = isPlainObject(input) && '$version' in input ? withoutVersion(input) : input
+  const migrated = migrate(definition as ConfiguratorDefinition<unknown>, source, options.version ?? declared)
   const raw = migrated === undefined || migrated === null ? {} : migrated
   if (!isPlainObject(raw)) throw new StudioError('config/type', '配置必须是对象')
 
