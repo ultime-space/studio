@@ -4,7 +4,7 @@
 
 ## 去哪找
 
-- 怎么用：[README.md](./README.md)
+- 怎么用：[README.md](./README.md)（入口）→ [USAGE.md](./USAGE.md)（约定与命令）
 - 可调用能力：[SKILLS.md](./SKILLS.md)
 
 ## 机器入口
