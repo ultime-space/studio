@@ -79,6 +79,7 @@ const direct = await exportConfig(configurator, config)
 
 ## 版本与兼容
 
+- 0.4.2：包内脚本改用 `vp run` 入口，去掉对 pnpm 二进制的硬依赖；协议与运行时不变。
 - 0.4.1：README 改为入口卡，语义约定与命令细节下沉到 [USAGE.md](./USAGE.md)；协议与运行时不变。
 - 当前 `0.4.x`；0.x 阶段 `ConfiguratorDefinition` 仍可能调整。
 - 0.4.0：补诊断契约测试；无运行时行为变化。
