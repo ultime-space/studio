@@ -43,12 +43,12 @@
   },
   "scripts": {
     "build": "vp pack",
-    "check": "vp check && ultime-checks run && pnpm cycles",
+    "check": "vp check && ultime-checks run && vp run cycles",
     "checks": "ultime-checks run",
     "cycles": "vp lint --import-plugin --deny=import/no-cycle src",
     "test": "vp test",
     "size": "size-limit --json",
-    "prepublishOnly": "pnpm check && pnpm test && pnpm build",
+    "prepublishOnly": "vp run check && vp run test && vp run build",
     "prepare": "vp config --no-agent"
   },
   "devDependencies": {

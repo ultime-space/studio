@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------
 # 先 `vp staged` 处理暂存文件，再跑包内 `check`；需要浏览器的检查不进钩子。
 # 环境不具备（没有 node）时放行并提示，不算不合格。
-# 手动安装：pnpm exec vp config --no-agent；诊断：vp hooks status
+# 手动安装：vp config --no-agent；诊断：vp hooks status
 # ============================================================================
 set -e
 ROOT="$(git rev-parse --show-toplevel)"
