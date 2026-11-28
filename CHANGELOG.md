@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0 - 2026-11-28
+
+### Added
+
+- 通用诊断带 `fix`：字段缺失时按 `defaults` 补 `add`，数值越界 clamp 到边界，`select` 非法值回落默认，`multi-select` 只过滤非法项；目标值推不出来时不给 `fix`，只留 `hint`。
+- 新出口 `applyDiagnosticFix(config, diagnostic)`：应用一条诊断的 patch，返回新配置，不改入参；没有 `fix` 时抛 `fix/missing`。
+- 契约测试补 fix 检查：默认值存在时缺失必须有 fix，fix 必须可应用、不改写入参、应用后同路径不再有同级诊断。
+
 ## 0.4.2 - 2026-11-27
 
 ### Changed

@@ -42,7 +42,7 @@ export { defineConfigurator, matchesCondition } from './definition.ts'
 export type { NormalizeOptions } from './normalize.ts'
 export { coerceFieldValue, normalizeConfig } from './normalize.ts'
 
-export { fieldDiagnostics, hasErrors, sortDiagnostics, validateConfig } from './diagnostics.ts'
+export { applyDiagnosticFix, fieldDiagnostics, hasErrors, sortDiagnostics, validateConfig } from './diagnostics.ts'
 
 export type { ConfiguratorController, ConfiguratorOptions, ConfiguratorState, ResetOptions } from './controller.ts'
 export { createConfigurator } from './controller.ts'

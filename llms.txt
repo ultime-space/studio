@@ -1,6 +1,6 @@
 # @ultime/studio · AI 索引
 
-适用版本：0.4.x
+适用版本：0.5.x
 
 ## 去哪找
 
@@ -9,7 +9,7 @@
 
 ## 机器入口
 
-- 公共出口：`@ultime/studio` 的 `defineConfigurator` / `createConfigurator` / `exportConfig` / `normalizeConfig` / `assertContract`
+- 公共出口：`@ultime/studio` 的 `defineConfigurator` / `createConfigurator` / `exportConfig` / `normalizeConfig` / `assertContract` / `applyDiagnosticFix`
 - 契约测试：`assertContract(definition)`
 - 校验 / 导出：`createConfigurator` / `exportConfig`
 

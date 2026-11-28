@@ -13,6 +13,7 @@ export type StudioErrorCode =
   | 'config/not-json'
   | 'pointer/invalid'
   | 'patch/invalid'
+  | 'fix/missing'
   | 'preset/missing'
   | 'share/invalid'
 

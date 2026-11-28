@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vite-plus/test'
-import { fieldDiagnostics, hasErrors, sortDiagnostics, validateConfig, type Diagnostic } from '../src/index.ts'
+import {
+  applyDiagnosticFix,
+  fieldDiagnostics,
+  hasErrors,
+  sortDiagnostics,
+  validateConfig,
+  type Diagnostic,
+} from '../src/index.ts'
 import { demoDefaults, demoDefinition, type DemoConfig } from './fixtures/theme.ts'
 
 describe('诊断排序与稳定性', () => {
@@ -46,5 +53,61 @@ describe('配置诊断', () => {
     expect(first).toEqual(second)
     expect(first.map((item) => item.code)).toContain('demo/space-empty')
     expect(first.every((item) => item.path !== undefined)).toBe(true)
+  })
+})
+
+function pick(config: DemoConfig, path: string): Diagnostic {
+  const hit = fieldDiagnostics(demoDefinition, config).find((item) => item.path === path)
+  if (!hit) throw new Error(`没有 ${path} 的诊断`)
+  return hit
+}
+
+describe('修复建议', () => {
+  it('缺失给 add 默认值；应用后诊断消失，入参不变', () => {
+    const config = structuredClone(demoDefaults)
+    delete (config.theme.accent as { hue?: number }).hue
+
+    const diagnostic = pick(config, '/theme/accent/hue')
+    expect(diagnostic.code).toBe('field/missing')
+    expect(diagnostic.fix?.patch).toEqual([{ op: 'add', path: '/theme/accent/hue', value: 210 }])
+
+    const fixed = applyDiagnosticFix(config, diagnostic)
+    expect(fixed.theme.accent.hue).toBe(210)
+    expect((config.theme.accent as { hue?: number }).hue).toBeUndefined()
+    expect(fieldDiagnostics(demoDefinition, fixed).some((item) => item.path === '/theme/accent/hue')).toBe(false)
+  })
+
+  it('越界 clamp 到边界', () => {
+    const config = structuredClone(demoDefaults)
+    config.theme.accent.hue = 400
+
+    const diagnostic = pick(config, '/theme/accent/hue')
+    expect(diagnostic.code).toBe('field/range')
+    expect(diagnostic.fix?.patch).toEqual([{ op: 'replace', path: '/theme/accent/hue', value: 360 }])
+    expect(applyDiagnosticFix(config, diagnostic).theme.accent.hue).toBe(360)
+  })
+
+  it('select 非法值回落默认', () => {
+    const config = structuredClone(demoDefaults)
+    config.theme.accent.tone = 'neon'
+
+    const diagnostic = pick(config, '/theme/accent/tone')
+    expect(diagnostic.code).toBe('field/enum')
+    expect(diagnostic.fix?.label).toContain('恢复默认值')
+    expect(applyDiagnosticFix(config, diagnostic).theme.accent.tone).toBe('neutral')
+  })
+
+  it('multi-select 只过滤非法项', () => {
+    const config = structuredClone(demoDefaults)
+    config.theme.formats = ['css', 'pdf']
+
+    const diagnostic = pick(config, '/theme/formats')
+    expect(diagnostic.fix?.patch).toEqual([{ op: 'replace', path: '/theme/formats', value: ['css'] }])
+    expect(applyDiagnosticFix(config, diagnostic).theme.formats).toEqual(['css'])
+  })
+
+  it('没有 fix 的诊断拒绝应用', () => {
+    const diagnostic: Diagnostic = { level: 'error', code: 'demo/custom', message: '自定义规则' }
+    expect(() => applyDiagnosticFix(demoDefaults, diagnostic)).toThrow(/没有可应用的 fix/)
   })
 })

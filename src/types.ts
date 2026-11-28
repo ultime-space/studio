@@ -28,7 +28,9 @@ export type DiagnosticLevel = 'error' | 'warn' | 'info'
 
 /** 修复建议也是一段 patch：可预览、可审阅，不是黑盒操作 */
 export interface DiagnosticFix {
+  /** 给用户看的动作说明，如「收敛到 360」 */
   label: string
+  /** 只含 `add` / `replace`：修复不能让字段消失 */
   patch: ConfigPatch
 }
 
