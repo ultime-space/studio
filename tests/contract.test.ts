@@ -105,6 +105,22 @@ describe('checkContract', () => {
     expect(report.issues.map((item) => item.code)).toContain('inspect/error')
   })
 
+  it('默认值违反自身约束会被 fix 契约抓出来', async () => {
+    const definition = defineConfigurator<DemoConfig>({
+      ...demoDefinition,
+      defaults: {
+        ...demoDefaults,
+        theme: {
+          ...demoDefaults.theme,
+          accent: { ...demoDefaults.theme.accent, hue: 400 },
+        },
+      },
+    })
+
+    const report = await checkContract(definition, { export: false })
+    expect(report.issues.map((item) => item.code)).toContain('fix/unresolved')
+  })
+
   it('assertContract 在不合格时抛错', async () => {
     const definition = defineConfigurator<DemoConfig>({ ...demoDefinition, id: '' })
     await expect(assertContract(definition, { export: false })).rejects.toThrow(/adapter 契约未通过/)

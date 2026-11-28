@@ -5,13 +5,14 @@
  * 序列化 / 分享串能否往返、导出是否可重建。领域 golden 测试仍由定义包自己写。
  */
 
-import type { ConfiguratorDefinition } from './definition.ts'
-import { hasErrors, validateConfig } from './diagnostics.ts'
+import type { ConfiguratorDefinition, FieldSpec } from './definition.ts'
+import { applyDiagnosticFix, fieldDiagnostics, hasErrors, validateConfig } from './diagnostics.ts'
 import { exportConfig } from './export.ts'
 import { findNonJsonPath, isPlainObject, stableStringify } from './json.ts'
 import { normalizeConfig } from './normalize.ts'
 import { decodeShare, decodeURL, deserializeConfig, encodeShare, encodeURL, serializeConfig } from './persistence.ts'
-import { isPointer } from './pointer.ts'
+import { getAt, isPointer, parsePointer, removeAt, setAt } from './pointer.ts'
+import type { Diagnostic } from './types.ts'
 
 export interface ContractIssue {
   code: string
@@ -102,6 +103,106 @@ function checkReadOnly<TConfig>(
   }
 }
 
+const ARRAY_TOKEN = /^(0|[1-9]\d*|-)$/
+
+/** 数组下标路径不做「删掉再加回」往返：`add` 会追加到末尾，位置会漂。 */
+function isArrayPath(path: string): boolean {
+  return parsePointer(path).some((token) => ARRAY_TOKEN.test(token))
+}
+
+/**
+ * 校验一条 fix：必须存在、能应用、不改入参、应用后同类诊断消失。
+ * 只覆盖两条通用规则（缺失取默认值、越界 clamp）；领域 fix 由定义包自己测。
+ */
+function checkFix<TConfig>(
+  definition: ConfiguratorDefinition<TConfig>,
+  field: FieldSpec,
+  config: TConfig,
+  diagnostic: Diagnostic,
+  issue: (code: string, message: string, path?: string) => void,
+): void {
+  if (!diagnostic.fix) {
+    issue('fix/absent', `${field.label}：目标值可推导，但诊断没有 fix`, field.path)
+    return
+  }
+
+  const snapshot = stableStringify(config)
+  let fixed: TConfig
+  try {
+    fixed = applyDiagnosticFix(config, diagnostic)
+  } catch (error) {
+    issue('fix/patch', `${field.label}：fix 无法应用（${(error as Error).message}）`, field.path)
+    return
+  }
+
+  if (stableStringify(config) !== snapshot) {
+    issue('fix/mutation', `${field.label}：应用 fix 改写了入参配置`, field.path)
+  }
+  // 比 code 更严：修复后同路径不能再有同级诊断（缺失修成越界也算没修好）
+  const lingering = fieldDiagnostics(definition, fixed).some(
+    (item) => item.path === field.path && item.level === diagnostic.level,
+  )
+  if (lingering) {
+    issue('fix/unresolved', `${field.label}：fix 应用后同路径仍有 ${diagnostic.level} 级诊断`, field.path)
+  }
+}
+
+/** 缺失场景：默认值存在时必须有 fix，且补回后不再报缺失 */
+function checkMissingFix<TConfig>(
+  definition: ConfiguratorDefinition<TConfig>,
+  field: FieldSpec,
+  config: TConfig,
+  issue: (code: string, message: string, path?: string) => void,
+): void {
+  if (field.optional || field.type === 'custom') return
+  if (getAt(config, field.path) === undefined) return
+  if (getAt(definition.defaults, field.path) === undefined) return
+
+  const variant = structuredClone(config)
+  removeAt(variant, field.path)
+  const hit = fieldDiagnostics(definition, variant).find(
+    (item) => item.path === field.path && item.code === 'field/missing',
+  )
+  if (!hit) {
+    issue('fix/missing-diagnostic', `${field.label}：字段缺失未产出诊断`, field.path)
+    return
+  }
+  checkFix(definition, field, variant, hit, issue)
+}
+
+/** 越界场景：有边界时必须有 fix，clamp 后不再报越界 */
+function checkRangeFix<TConfig>(
+  definition: ConfiguratorDefinition<TConfig>,
+  field: FieldSpec,
+  config: TConfig,
+  issue: (code: string, message: string, path?: string) => void,
+): void {
+  const numeric = field.type === 'number' || field.type === 'slider' || field.type === 'hue'
+  if (!numeric) return
+  const bound = field.max !== undefined ? field.max + 1 : field.min !== undefined ? field.min - 1 : undefined
+  if (bound === undefined || getAt(config, field.path) === undefined) return
+
+  const variant = structuredClone(config)
+  setAt(variant, field.path, bound)
+  const hit = fieldDiagnostics(definition, variant).find(
+    (item) => item.path === field.path && item.code === 'field/range',
+  )
+  if (!hit) return
+  checkFix(definition, field, variant, hit, issue)
+}
+
+function collectFixIssues<TConfig>(
+  definition: ConfiguratorDefinition<TConfig>,
+  config: TConfig,
+  issue: (code: string, message: string, path?: string) => void,
+): void {
+  for (const field of definition.fields) {
+    if (isArrayPath(field.path)) continue
+    checkMissingFix(definition, field, config, issue)
+    checkRangeFix(definition, field, config, issue)
+  }
+}
+
 async function collectBehaviorIssues<TConfig>(
   definition: ConfiguratorDefinition<TConfig>,
   options: ContractOptions,
@@ -150,6 +251,8 @@ async function collectBehaviorIssues<TConfig>(
   } catch (error) {
     issue('validate/defaults', `默认值校验失败：${(error as Error).message}`)
   }
+
+  collectFixIssues(definition, defaults, issue)
 
   checkReadOnly('inspect', definition.inspect?.bind(definition), defaults, issue)
   checkReadOnly('preview', definition.preview?.bind(definition), defaults, issue)

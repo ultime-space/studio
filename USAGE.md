@@ -1,7 +1,7 @@
 # 使用说明
 
 > 定位：`@ultime/studio` 的完整用法：语义约定、契约测试、目录与命令。
-> 适用版本：0.4.x
+> 适用版本：0.5.x
 > 关系：定位与最小示例见 [README](./README.md)；AI 入口见 [`SKILLS.md`](./SKILLS.md)。
 
 ## 语义约定
@@ -24,6 +24,7 @@
 | `inspect()` | 只读派生值，供上游展示「配置 → 派生」；不进 config、不进导出；契约测试检查确定性与不改写配置 |
 | `preview()` | `PreviewModel.css` 是主路径，必须与 `export()` 同源；`vars` 只做兼容；契约测试检查确定性与不改写配置 |
 | 诊断 | `{ level, code, message, path?, hint?, fix? }`；`hint` 是下一步怎么改，`fix` 是可审阅 patch |
+| `applyDiagnosticFix(config, diagnostic)` | 应用一条诊断的 patch，返回新配置、不改入参；没有 `fix` 抛 `fix/missing` |
 
 **四条硬约束**：先规范化再导出；导出确定性（同输入逐字节相同、lock 不含时间戳）；预览与导出同源；运行时不决定布局与控件形态。
 
@@ -31,6 +32,8 @@
 
 - 未知字段按 `unknownPolicy` 处理，只查对象键、不深入数组元素（数组整体当作一个值）。
 - 配置根上 `$` 开头的键（`$schema` / `$version`）视为元信息，不参与未知字段判定；`$version` 只在导入时用于迁移。
+
+**fix 生成口径**：缺失 → `add` 默认值；数值越界 → clamp 到 `min` / `max`；`select` 非法值 → 回落默认；`multi-select` → 只过滤非法项。目标值推不出来时不给 `fix`。契约测试核对可应用性、入参只读与「应用后同路径不再有同级诊断」。
 
 ## 契约测试
 

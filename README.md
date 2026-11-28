@@ -79,9 +79,10 @@ const direct = await exportConfig(configurator, config)
 
 ## 版本与兼容
 
+- 0.5.0：通用诊断带 `fix`（缺失补默认值、越界 clamp、非法枚举过滤），新增 `applyDiagnosticFix`；契约测试补 fix 的可应用性与入参只读检查。
 - 0.4.2：包内脚本改用 `vp run` 入口，去掉对 pnpm 二进制的硬依赖；协议与运行时不变。
 - 0.4.1：README 改为入口卡，语义约定与命令细节下沉到 [USAGE.md](./USAGE.md)；协议与运行时不变。
-- 当前 `0.4.x`；0.x 阶段 `ConfiguratorDefinition` 仍可能调整。
+- 当前 `0.5.x`；0.x 阶段 `ConfiguratorDefinition` 仍可能调整。
 - 0.4.0：补诊断契约测试；无运行时行为变化。
 - 0.3.1：`$version` 参与迁移并从配置剥离；JSON Pointer 严格校验数组下标；`applyPatch` 拒绝未知 op；重复产物路径返回 error 诊断。
 - 0.3.0：诊断新增 `hint`，契约测试补 `inspect` / `preview` 的确定性与只读检查；协议形状只增不改。
